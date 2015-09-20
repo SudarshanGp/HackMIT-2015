@@ -1,7 +1,9 @@
 package com.example.kanishk.hackmit;
 
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
@@ -11,6 +13,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 
@@ -23,16 +26,26 @@ import watch.nudge.phonegesturelibrary.AbstractPhoneGestureActivity;
 public class MainActivity extends AbstractPhoneGestureActivity {
     JSONArray contacts = new JSONArray();
     JSONArray phoneNumbers = new JSONArray();
+    int index;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        index = 0;
     }
 
     @Override
     public void onSnap() {
         Toast.makeText(this, "Feeling snappy!", Toast.LENGTH_LONG).show();
+        Intent callIntent = new Intent(Intent.ACTION_DIAL);
+        try {
+            callIntent.setData(Uri.parse("tel." + phoneNumbers.getString(index)));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(callIntent);
     }
 
     @Override
@@ -50,12 +63,20 @@ public class MainActivity extends AbstractPhoneGestureActivity {
 
     @Override
     public void onTiltX(float x) {
-        //Toast.makeText(this, "Feeling Tiltxxx!", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Feeling Tiltxxx!", Toast.LENGTH_LONG).show();
+        //Increment array
+        if(x == 2 || x==4 || x==6 || x==8){
+            index++;
+        }else if(x == -2 || x == -4 || x== -6 || x== -8){
+            index--;
+        }
     }
 
     @Override
     public void onTilt(float x, float y, float z) {
         //Toast.makeText(this, "Feeling Titly!", Toast.LENGTH_LONG).show();
+        //Increment
+
     }
 
     @Override
@@ -102,7 +123,7 @@ public class MainActivity extends AbstractPhoneGestureActivity {
             while (cur.moveToNext()) {
                 String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
                 String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                contacts.put(name);
+
 
                 if (Integer.parseInt(cur.getString(
                         cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
@@ -114,7 +135,8 @@ public class MainActivity extends AbstractPhoneGestureActivity {
                             new String[]{id}, null);
                     while (pCur.moveToNext()) {
                         String phoneNo = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-
+                        phoneNumbers.put(phoneNo);
+                        contacts.put(name);
                         //Toast.makeText(NativeContentProvider.this, "Name: " + name + ", Phone No: " + phoneNo, Toast.LENGTH_SHORT).show();
                     }
                     pCur.close();

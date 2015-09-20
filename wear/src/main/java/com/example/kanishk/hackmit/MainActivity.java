@@ -46,10 +46,11 @@ public class MainActivity extends AbstractGestureClientActivity {
     ListView listview;
     ArrayList<String> contactsArray = new ArrayList<String>();
     BroadcastReceiver contactsReceiver;
-
+    int index;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        index = 0;
         setContentView(R.layout.activity_main);
         setAmbientEnabled();
         setSubscribeWindowEvents(true);
@@ -75,7 +76,7 @@ public class MainActivity extends AbstractGestureClientActivity {
                     listview = (ListView) findViewById(R.id.contacts);
                     adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, contactsArray);
                     listview.setAdapter(adapter);
-                    listview.setSelection(2);
+                    listview.setSelection(index);
 
 
                 } catch (JSONException e) {
@@ -116,7 +117,16 @@ public class MainActivity extends AbstractGestureClientActivity {
 
     @Override
     public void onTiltX(float v) {
-
+        Toast.makeText(this, "Feeling Tiltxxx!", Toast.LENGTH_LONG).show();
+        if(v == 2 || v == 4 || v == 6 || v ==8){
+            index++;
+            vibrator.vibrate(250);
+            listview.setSelection(index);
+        }else if(v == -2 || v == -4 || v == -6 || v == -8){
+            index --;
+            vibrator.vibrate(250);
+            listview.setSelection(index);
+        }
     }
 
     @Override
