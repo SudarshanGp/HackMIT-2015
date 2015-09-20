@@ -46,10 +46,11 @@ public class MainActivity extends AbstractGestureClientActivity {
     ListView listview;
     ArrayList<String> contactsArray = new ArrayList<String>();
     BroadcastReceiver contactsReceiver;
-
+    int index;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        index = 0;
         setContentView(R.layout.activity_main);
         setAmbientEnabled();
         setSubscribeWindowEvents(true);
@@ -67,6 +68,7 @@ public class MainActivity extends AbstractGestureClientActivity {
                 try {
                     JSONArray jsonArrayContacts = new JSONArray(jsonContacts);
                     if(jsonArrayContacts != null) {
+                        contactsArray.clear();
                         for (int i = 0; i < jsonArrayContacts.length(); i++) {
                             contactsArray.add(jsonArrayContacts.get(i).toString());
                         }
@@ -74,15 +76,21 @@ public class MainActivity extends AbstractGestureClientActivity {
                     listview = (ListView) findViewById(R.id.contacts);
                     adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, contactsArray);
                     listview.setAdapter(adapter);
+                    listview.setSelection(index);
+
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         };
-        for(int i=0;i<contactsArray.size();i++)
-        Log.d("Hello", contactsArray.get(i));
+
+
+
         LocalBroadcastManager.getInstance(this).registerReceiver(contactsReceiver, filter);
     }
+
+
 
     @Override
     public void onDestroy() {
@@ -108,13 +116,30 @@ public class MainActivity extends AbstractGestureClientActivity {
     }
 
     @Override
-    public void onTiltX(float v) {
+    public void onTiltX(float v1) {
+        if(v1 >=2 && v1<=3){
+            index++;
+            vibrator.vibrate(250);
+            listview.setSelection(index);
+        }else if(v1 <= -2 && v1>=-3){
+            index --;
+            vibrator.vibrate(250);
+            listview.setSelection(index);
+        }
 
     }
 
     @Override
     public void onTilt(float v, float v1, float v2) {
-
+        if(v1 >=2 && v1<=3){
+            index++;
+            vibrator.vibrate(250);
+            listview.setSelection(index);
+        }else if(v1 <= -2 && v1>=-3){
+            index --;
+            vibrator.vibrate(250);
+            listview.setSelection(index);
+        }
     }
 
     @Override
@@ -127,6 +152,7 @@ public class MainActivity extends AbstractGestureClientActivity {
         ArrayList<GestureConstants.SubscriptionGesture> gestures = new ArrayList<SubscriptionGesture>();
         gestures.add(SubscriptionGesture.TWIST);
         gestures.add(SubscriptionGesture.TILT);
+        //gestures.add(SubscriptionGesture.TILT_X);
         gestures.add(SubscriptionGesture.SNAP);
         gestures.add(GestureConstants.SubscriptionGesture.FLICK);
         return gestures;
