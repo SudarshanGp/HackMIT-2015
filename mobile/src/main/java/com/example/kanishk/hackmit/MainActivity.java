@@ -1,7 +1,10 @@
 package com.example.kanishk.hackmit;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,9 +12,17 @@ import android.widget.Toast;
 
 import org.json.JSONArray;
 
+import java.util.ArrayList;
+
 import watch.nudge.phonegesturelibrary.AbstractPhoneGestureActivity;
 
+
+
+
+
 public class MainActivity extends AbstractPhoneGestureActivity {
+    JSONArray contacts = new JSONArray();
+    JSONArray phoneNumbers = new JSONArray();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,13 +88,43 @@ public class MainActivity extends AbstractPhoneGestureActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        String[] projection = new String[] {
+                ContactsContract.Contacts._ID,
+                ContactsContract.Contacts.DISPLAY_NAME,
+                ContactsContract.Contacts.STARRED};
+
+
+        ContentResolver cr = getContentResolver();
+        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
+                null, null, null, null);
+        if (cur.getCount() > 0) {
+            while (cur.moveToNext()) {
+                String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+                String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                contacts.put(name);
+
+                if (Integer.parseInt(cur.getString(
+                        cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
+
+                    Cursor pCur = cr.query(
+                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                            null,
+                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                            new String[]{id}, null);
+                    while (pCur.moveToNext()) {
+                        String phoneNo = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+
+                        //Toast.makeText(NativeContentProvider.this, "Name: " + name + ", Phone No: " + phoneNo, Toast.LENGTH_SHORT).show();
+                    }
+                    pCur.close();
+                }
+            }
+        }
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                JSONArray contacts = new JSONArray();
-                contacts.put("Contact1");
-                contacts.put("COntact2");
                 sendCustomMessageToWatch("contacts|" + contacts.toString());
             }
         },1000);

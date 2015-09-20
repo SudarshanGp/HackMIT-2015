@@ -12,7 +12,11 @@
 
     <ListView android:id="@+id/contacts"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:choiceMode="singleChoice"
+        android:background="@drawable/bg_key"
+        android:drawSelectorOnTop="true"
+        >
     </ListView>
 
 </android.support.wearable.view.BoxInsetLayout>

@@ -67,6 +67,7 @@ public class MainActivity extends AbstractGestureClientActivity {
                 try {
                     JSONArray jsonArrayContacts = new JSONArray(jsonContacts);
                     if(jsonArrayContacts != null) {
+                        contactsArray.clear();
                         for (int i = 0; i < jsonArrayContacts.length(); i++) {
                             contactsArray.add(jsonArrayContacts.get(i).toString());
                         }
@@ -74,15 +75,21 @@ public class MainActivity extends AbstractGestureClientActivity {
                     listview = (ListView) findViewById(R.id.contacts);
                     adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, contactsArray);
                     listview.setAdapter(adapter);
+                    listview.setSelection(2);
+
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         };
-        for(int i=0;i<contactsArray.size();i++)
-        Log.d("Hello", contactsArray.get(i));
+
+
+
         LocalBroadcastManager.getInstance(this).registerReceiver(contactsReceiver, filter);
     }
+
+
 
     @Override
     public void onDestroy() {
