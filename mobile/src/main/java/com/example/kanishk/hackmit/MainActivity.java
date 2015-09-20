@@ -65,9 +65,9 @@ public class MainActivity extends AbstractPhoneGestureActivity {
     public void onTiltX(float x) {
         Toast.makeText(this, "Feeling Tiltxxx!", Toast.LENGTH_LONG).show();
         //Increment array
-        if(x == 2 || x==4 || x==6 || x==8){
+        if(x >=2 && x<=3){
             index++;
-        }else if(x == -2 || x == -4 || x== -6 || x== -8){
+        }else if(x <= -2 && x>=-3){
             index--;
         }
     }

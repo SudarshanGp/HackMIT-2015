@@ -118,11 +118,11 @@ public class MainActivity extends AbstractGestureClientActivity {
     @Override
     public void onTiltX(float v) {
         Toast.makeText(this, "Feeling Tiltxxx!", Toast.LENGTH_LONG).show();
-        if(v == 2 || v == 4 || v == 6 || v ==8){
+        if(v >=2 && v<=3){
             index++;
             vibrator.vibrate(250);
             listview.setSelection(index);
-        }else if(v == -2 || v == -4 || v == -6 || v == -8){
+        }else if(v <= -2 && v>=-3){
             index --;
             vibrator.vibrate(250);
             listview.setSelection(index);
