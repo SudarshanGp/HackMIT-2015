@@ -26,13 +26,13 @@ import watch.nudge.phonegesturelibrary.AbstractPhoneGestureActivity;
 public class MainActivity extends AbstractPhoneGestureActivity {
     JSONArray contacts = new JSONArray();
     JSONArray phoneNumbers = new JSONArray();
-    int index;
+    int index = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        index = 0;
+
     }
 
     @Override
@@ -65,17 +65,19 @@ public class MainActivity extends AbstractPhoneGestureActivity {
     public void onTiltX(float x) {
         Toast.makeText(this, "Feeling Tiltxxx!", Toast.LENGTH_LONG).show();
         //Increment array
-        if(x >=2 && x<=3){
-            index++;
-        }else if(x <= -2 && x>=-3){
-            index--;
-        }
+
     }
 
     @Override
     public void onTilt(float x, float y, float z) {
-        //Toast.makeText(this, "Feeling Titly!", Toast.LENGTH_LONG).show();
+
         //Increment
+        if(y >=2 && y<=3){
+            index++;
+        }else if(y <= -2 && y>=-3){
+            index--;
+        }
+
 
     }
 

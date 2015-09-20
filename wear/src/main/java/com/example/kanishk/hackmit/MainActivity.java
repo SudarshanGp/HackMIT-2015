@@ -118,20 +118,20 @@ public class MainActivity extends AbstractGestureClientActivity {
     @Override
     public void onTiltX(float v) {
         Toast.makeText(this, "Feeling Tiltxxx!", Toast.LENGTH_LONG).show();
-        if(v >=2 && v<=3){
-            index++;
-            vibrator.vibrate(250);
-            listview.setSelection(index);
-        }else if(v <= -2 && v>=-3){
-            index --;
-            vibrator.vibrate(250);
-            listview.setSelection(index);
-        }
+
     }
 
     @Override
     public void onTilt(float v, float v1, float v2) {
-
+        if(v1 >=2 && v1<=3){
+            index++;
+            vibrator.vibrate(250);
+            listview.setSelection(index);
+        }else if(v1 <= -2 && v1>=-3){
+            index --;
+            vibrator.vibrate(250);
+            listview.setSelection(index);
+        }
     }
 
     @Override
