@@ -1,18 +1,30 @@
 package com.example.kanishk.hackmit;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.view.BoxInsetLayout;
-import android.view.View;
+import android.util.Log;
+import android.util.Pair;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import watch.nudge.gesturelibrary.AbstractGestureClientActivity;
+import watch.nudge.gesturelibrary.GestureConnectionConstants;
 import watch.nudge.gesturelibrary.GestureConstants;
 
 import static watch.nudge.gesturelibrary.GestureConstants.SubscriptionGesture;
@@ -26,18 +38,56 @@ public class MainActivity extends AbstractGestureClientActivity {
     private TextView mTextView;
     private TextView mClockView;
     private Vibrator vibrator;
+    ArrayList<String> listItems=new ArrayList<String>();
+    ArrayList<String> listItems2=new ArrayList<String>();
+    ArrayAdapter<String> adapter;
+    ArrayAdapter<String> adapter2;
+    List<Pair<String,Integer>> list = new ArrayList<Pair<String,Integer>>();
+    ListView listview;
+    ArrayList<String> contactsArray = new ArrayList<String>();
+    BroadcastReceiver contactsReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setAmbientEnabled();
-        setSubscribeWindowEvents(false);
+        setSubscribeWindowEvents(true);
 
         mContainerView = (BoxInsetLayout) findViewById(R.id.container);
-        mTextView = (TextView) findViewById(R.id.text);
-        mClockView = (TextView) findViewById(R.id.clock);
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        Pair<String,Integer> ob = new Pair<String,Integer>("test", 999);
+        list.add(0, ob);
+        IntentFilter filter = new IntentFilter("contacts");
+        contactsReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d("Here","Im here");
+                String jsonContacts = intent.getStringExtra(GestureConnectionConstants.CUSTOM_KEY1);
+                try {
+                    JSONArray jsonArrayContacts = new JSONArray(jsonContacts);
+                    if(jsonArrayContacts != null) {
+                        for (int i = 0; i < jsonArrayContacts.length(); i++) {
+                            contactsArray.add(jsonArrayContacts.get(i).toString());
+                        }
+                    }
+                    listview = (ListView) findViewById(R.id.contacts);
+                    adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, contactsArray);
+                    listview.setAdapter(adapter);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        for(int i=0;i<contactsArray.size();i++)
+        Log.d("Hello", contactsArray.get(i));
+        LocalBroadcastManager.getInstance(this).registerReceiver(contactsReceiver, filter);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(contactsReceiver);
     }
 
     @Override
@@ -78,6 +128,7 @@ public class MainActivity extends AbstractGestureClientActivity {
         gestures.add(SubscriptionGesture.TWIST);
         gestures.add(SubscriptionGesture.TILT);
         gestures.add(SubscriptionGesture.SNAP);
+        gestures.add(GestureConstants.SubscriptionGesture.FLICK);
         return gestures;
     }
 
@@ -105,16 +156,16 @@ public class MainActivity extends AbstractGestureClientActivity {
     }
 
     private void updateDisplay() {
-        if (isAmbient()) {
-            mContainerView.setBackgroundColor(getResources().getColor(android.R.color.black));
-            mTextView.setTextColor(getResources().getColor(android.R.color.white));
-            mClockView.setVisibility(View.VISIBLE);
-
-            mClockView.setText(AMBIENT_DATE_FORMAT.format(new Date()));
-        } else {
-            mContainerView.setBackground(null);
-            mTextView.setTextColor(getResources().getColor(android.R.color.black));
-            mClockView.setVisibility(View.GONE);
-        }
+//        if (isAmbient()) {
+//            mContainerView.setBackgroundColor(getResources().getColor(android.R.color.black));
+//            mTextView.setTextColor(getResources().getColor(android.R.color.white));
+//            mClockView.setVisibility(View.VISIBLE);
+//
+//            mClockView.setText(AMBIENT_DATE_FORMAT.format(new Date()));
+//        } else {
+//            mContainerView.setBackground(null);
+//            mTextView.setTextColor(getResources().getColor(android.R.color.black));
+//            mClockView.setVisibility(View.GONE);
+//        }
     }
 }

@@ -1,10 +1,13 @@
 package com.example.kanishk.hackmit;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import org.json.JSONArray;
 
 import watch.nudge.phonegesturelibrary.AbstractPhoneGestureActivity;
 
@@ -36,12 +39,12 @@ public class MainActivity extends AbstractPhoneGestureActivity {
 
     @Override
     public void onTiltX(float x) {
-        Toast.makeText(this, "Feeling Tiltxxx!", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "Feeling Tiltxxx!", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onTilt(float x, float y, float z) {
-        Toast.makeText(this, "Feeling Titly!", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "Feeling Titly!", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -69,5 +72,21 @@ public class MainActivity extends AbstractPhoneGestureActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                JSONArray contacts = new JSONArray();
+                contacts.put("Contact1");
+                contacts.put("COntact2");
+                sendCustomMessageToWatch("contacts|" + contacts.toString());
+            }
+        },1000);
+
     }
 }
